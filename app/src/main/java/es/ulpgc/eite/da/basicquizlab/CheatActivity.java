@@ -17,7 +17,7 @@ public class CheatActivity extends AppCompatActivity {
 
   private Button noButton, yesButton;
   private TextView answerText;
-
+ //Hola
   private int currentAnswer;
   private boolean answerCheated;
 
