@@ -6,6 +6,8 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class CheatActivity extends AppCompatActivity {
@@ -17,7 +19,13 @@ public class CheatActivity extends AppCompatActivity {
 
   private Button noButton, yesButton;
   private TextView answerText;
- //Hola
+
+  private final static String USER_YES_BUTTON = "USER_YES_BUTTON";
+  private final static String SAVE_ANSWER = "SAVE_ANSWER ";
+
+  private boolean yesClicked = false;
+
+
   private int currentAnswer;
   private boolean answerCheated;
 
@@ -28,11 +36,21 @@ public class CheatActivity extends AppCompatActivity {
 
     getSupportActionBar().setTitle(R.string.cheat_title);
 
+    if(savedInstanceState != null){
+      yesClicked = savedInstanceState.getBoolean(USER_YES_BUTTON);
+      currentAnswer = savedInstanceState.getInt(SAVE_ANSWER);
+      answerCheated = savedInstanceState.getBoolean(EXTRA_CHEATED);
+
+    }
+
+
     initLayoutData();
 
     linkLayoutComponents();
+
     enableLayoutButtons();
   }
+
 
   private void initLayoutData() {
     currentAnswer = getIntent().getExtras().getInt(EXTRA_ANSWER);
@@ -45,10 +63,24 @@ public class CheatActivity extends AppCompatActivity {
     answerText = findViewById(R.id.answerText);
   }
 
-  private void enableLayoutButtons() {
 
-    noButton.setOnClickListener(v -> onNoButtonClicked());
-    yesButton.setOnClickListener(v -> onYesButtonClicked());
+
+  private void enableLayoutButtons() {
+    if(yesClicked == true){
+      yesButton.setEnabled(false);
+      noButton.setEnabled(false);
+      if (currentAnswer == 1){
+        answerText.setText("True");
+
+      } else {
+        answerText.setText("False");
+      }
+
+    } else {
+      noButton.setOnClickListener(v -> onNoButtonClicked());
+      yesButton.setOnClickListener(v -> onYesButtonClicked());
+    }
+
   }
 
   private void returnCheatedStatus() {
@@ -74,6 +106,8 @@ public class CheatActivity extends AppCompatActivity {
     yesButton.setEnabled(false);
     noButton.setEnabled(false);
     answerCheated = true;
+    yesClicked = true;
+
 
     if(currentAnswer == 0) {
       answerText.setText(R.string.false_text);
@@ -83,6 +117,7 @@ public class CheatActivity extends AppCompatActivity {
     }
   }
 
+
   private void onNoButtonClicked() {
     yesButton.setEnabled(false);
     noButton.setEnabled(false);
@@ -90,4 +125,13 @@ public class CheatActivity extends AppCompatActivity {
     returnCheatedStatus();
   }
 
+  @Override
+  protected void onSaveInstanceState(@NonNull Bundle outState) {
+    super.onSaveInstanceState(outState);
+
+    outState.putBoolean(USER_YES_BUTTON, yesClicked);
+    outState.putInt(SAVE_ANSWER, currentAnswer);
+    outState.putBoolean(EXTRA_CHEATED,answerCheated);
+
+  }
 }
